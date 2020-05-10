@@ -11,3 +11,10 @@
 .fighter-preview___left {
   align-items: flex-start;
 }
+
+/* todo: style this */
+.fighter-preview__img {}
+.fighter-preview__name {}
+.fighter-preview__health {}
+.fighter-preview__attack {}
+.fighter-preview__defense {}
