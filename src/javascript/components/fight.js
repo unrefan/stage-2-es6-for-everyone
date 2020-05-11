@@ -32,6 +32,7 @@ export async function fight(firstFighter, secondFighter) {
 
     Emitter.on('keydown', handleKeyEvent(onePlayer, twoPlayer, prepareAttack, prepareDefense), true);
     Emitter.on('keyup', handleKeyEvent(onePlayer, twoPlayer, attack, defense), true);
+    Emitter.on('keyup', runProc(onePlayer, twoPlayer, proc), true);
 
     Emitter.emit(START_EVENT);
     onePlayer.canAttack = true;
@@ -41,6 +42,7 @@ export async function fight(firstFighter, secondFighter) {
     Emitter.on(WIN_EVENT, event => {
       Emitter.off('keydown', handleKeyEvent, true);
       Emitter.off('keyup', handleKeyEvent, true);
+      Emitter.off('keyup', runProc, true);
       onePlayer.canAttack = false;
       twoPlayer.canAttack = false;
 
@@ -53,12 +55,10 @@ function proc(firstFighter, secondFighter) {
   if (firstFighter.canProc) {
     firstFighter.canProc = false;
 
-    console.log('proc');
-
     secondFighter.effectiveHealth -= firstFighter.attack * 2;    
     secondFighter.healthBarWidth = secondFighter.healthPercent;
 
-    setTimeout(() => firstFighter.canProc = true, 1000 * 10);
+    setTimeout(() => (firstFighter.canProc = true), 1000 * 10);
   }
 }
 
@@ -78,6 +78,28 @@ function handleKeyEvent(firstFighter, secondFighter, attack, defense) {
       case `${controls.PlayerOneBlock}`: { defense(firstFighter, secondFighter); break; }
       case `${controls.PlayerTwoAttack}`: { attack(secondFighter, firstFighter); break; }
       case `${controls.PlayerTwoBlock}`: { defense(secondFighter, firstFighter); break; }
+    }
+  }
+}
+
+function runProc(firstFighter, secondFighter, proc) {
+  let keyStack = [];
+  return function (event) {
+    keyStack.push(`Key${event.key.toUpperCase()}`);
+
+    switch(true) {
+      case keyStack.join('') == controls.PlayerOneCriticalHitCombination.join(''): {
+        proc(firstFighter, secondFighter);
+        break;
+      }
+      case keyStack.join('') == controls.PlayerTwoCriticalHitCombination.join(''): {
+        proc(secondFighter, firstFighter);
+        break;
+      }
+    }
+
+    if (keyStack.length === 4) {
+      keyStack = [];
     }
   }
 }
