@@ -1,4 +1,6 @@
-import { createElement } from '../helpers/domHelper';
+import { createElement, EventEmitter } from '../helpers/domHelper';
+
+const Emitter = new EventEmitter(window);
 
 export function createFighterPreview(fighter, position) {
   const positionClassName = position === 'right' ? 'fighter-preview___right' : 'fighter-preview___left';
@@ -6,6 +8,9 @@ export function createFighterPreview(fighter, position) {
     tagName: 'div',
     className: `fighter-preview___root ${positionClassName}`,
   });
+
+  fighterElement.addEventListener('click', changeFighter(fighterElement, fighter));
+
   const infoContainer = createElement({
     tagName: 'div',
     className: `fighter-preview___info ${positionClassName}`,
@@ -79,4 +84,12 @@ export function createFighterDefense(fighter) {
     attributes: {},
     text: `Defense: ${fighter.defense}` ?? '-'
   });
+}
+
+function changeFighter(elem, fighter) {
+  return (event) => {
+    Array.from(elem.children).forEach(child => child.remove());
+
+    Emitter.emit('change-fighter', fighter);
+  }
 }
