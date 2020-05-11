@@ -23,6 +23,15 @@ export async function renderArena(selectedFighters) {
   fight(leftFighter, rightFighter)
     .then(winner => showWinnerModal(winner))
     .catch(error => console.error(error));
+
+  Emitter.on('revansh', () => {
+    document.getElementById(`left-fighter-indicator`).style.width = '100%';
+    document.getElementById(`right-fighter-indicator`).style.width = '100%';
+
+    fight(leftFighter, rightFighter)
+    .then(winner => showWinnerModal(winner))
+    .catch(error => console.error(error));
+  });
 }
 
 function createFightText() {

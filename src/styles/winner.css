@@ -1,0 +1,4 @@
+.winner__btns {
+    display: flex;
+    justify-content: space-around;
+}
