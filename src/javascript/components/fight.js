@@ -5,7 +5,7 @@ const gameProps = (fighter, indicator = 'left') => ({
   ...fighter,
   criticalHitChance: 1,
   dodgeChance: 1,
-  canAttack: true,
+  canAttack: false,
   canProc: true,
   effectiveHealth: fighter.health,
   healthBar: document.getElementById(`${indicator}-fighter-indicator`),
@@ -27,52 +27,57 @@ const EXTENTED_EVENT = 'game-extended';
 
 export async function fight(firstFighter, secondFighter) {
   return new Promise((resolve) => {
-    const one = gameProps(firstFighter, 'left');
-    const two = gameProps(secondFighter, 'right');
+    const onePlayer = gameProps(firstFighter, 'left');
+    const twoPlayer = gameProps(secondFighter, 'right');
 
-    Emitter.on('keydown', handleKeyEvent(one, two, prepareAttack, prepareDefense), true);
-    Emitter.on('keyup', handleKeyEvent(one, two, attack, defense), true);
+    Emitter.on('keydown', handleKeyEvent(onePlayer, twoPlayer, prepareAttack, prepareDefense), true);
+    Emitter.on('keyup', handleKeyEvent(onePlayer, twoPlayer, attack, defense), true);
 
     Emitter.emit(START_EVENT);
-    Emitter.on(EXTENTED_EVENT, gameExtended(one, two));
+    onePlayer.canAttack = true;
+    twoPlayer.canAttack = true;
+
+    Emitter.on(EXTENTED_EVENT, gameExtended(onePlayer, twoPlayer));
     Emitter.on(WIN_EVENT, event => {
       Emitter.off('keydown', handleKeyEvent, true);
       Emitter.off('keyup', handleKeyEvent, true);
+      onePlayer.canAttack = false;
+      twoPlayer.canAttack = false;
 
       resolve(event.detail);
     });
   });
 }
 
-function proc(one, two) {
-  if (one.canProc) {
-    one.canProc = false;
+function proc(firstFighter, secondFighter) {
+  if (firstFighter.canProc) {
+    firstFighter.canProc = false;
 
     console.log('proc');
 
-    two.effectiveHealth -= one.attack * 2;    
-    two.healthBarWidth = two.healthPercent;
+    secondFighter.effectiveHealth -= firstFighter.attack * 2;    
+    secondFighter.healthBarWidth = secondFighter.healthPercent;
 
-    setTimeout(() => one.canProc = true, 1000 * 10);
+    setTimeout(() => firstFighter.canProc = true, 1000 * 10);
   }
 }
 
-function gameExtended(one, two) {
+function gameExtended(firstFighter, secondFighter) {
   return function (event) {
-    one.effectiveHealth = one.health;
-    one.healthBarWidth = one.healthPercent / 3;
-    two.effectiveHealth = one.health;
-    two.healthBarWidth = two.healthPercent / 3;
+    firstFighter.effectiveHealth = firstFighter.health;
+    firstFighter.healthBarWidth = firstFighter.healthPercent / 3;
+    secondFighter.effectiveHealth = secondFighter.health;
+    secondFighter.healthBarWidth = secondFighter.healthPercent / 3;
   }
 }
 
-function handleKeyEvent(one, two, attack, defense) {
+function handleKeyEvent(firstFighter, secondFighter, attack, defense) {
   return function (event) {
     switch(`Key${event.key.toUpperCase()}`) {
-      case `${controls.PlayerOneAttack}`: { attack(one, two); break; }
-      case `${controls.PlayerOneBlock}`: { defense(one, two); break; }
-      case `${controls.PlayerTwoAttack}`: { attack(two, one); break; }
-      case `${controls.PlayerTwoBlock}`: { defense(two, one); break; }
+      case `${controls.PlayerOneAttack}`: { attack(firstFighter, secondFighter); break; }
+      case `${controls.PlayerOneBlock}`: { defense(firstFighter, secondFighter); break; }
+      case `${controls.PlayerTwoAttack}`: { attack(secondFighter, firstFighter); break; }
+      case `${controls.PlayerTwoBlock}`: { defense(secondFighter, firstFighter); break; }
     }
   }
 }
