@@ -34,3 +34,15 @@
 .preview-container___fight-btn.disabled {
   opacity: 0;
 }
+
+.preview-container___versus-block.fight {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+.preview-container___versus-fight {
+  color: #ba0303;
+  font-weight: bold;
+  font-size: 10em;
+}

@@ -1,16 +1,51 @@
-import { createElement } from '../helpers/domHelper';
+import { createElement, EventEmitter } from '../helpers/domHelper';
 import { createFighterImage } from './fighterPreview';
+import { fight } from './fight';
+import { showWinnerModal } from './modal/winner';
 
-export function renderArena(selectedFighters) {
+const Emitter = new EventEmitter(window);
+
+export async function renderArena(selectedFighters) {
   const root = document.getElementById('root');
   const arena = createArena(selectedFighters);
+  const fightText = createFightText();
 
   root.innerHTML = '';
   root.append(arena);
 
-  // todo:
-  // - start the fight
-  // - when fight is finished show winner
+  const [leftFighter, rightFighter] = selectedFighters;
+
+  Emitter.once('game-start', event => {
+    root.append(fightText);
+    setTimeout(() => fightText.remove(), 1000);
+  });
+
+  fight(leftFighter, rightFighter)
+    .then(winner => showWinnerModal(winner))
+    .catch(error => console.error(error));
+
+  Emitter.on('revansh', () => {
+    document.getElementById(`left-fighter-indicator`).style.width = '100%';
+    document.getElementById(`right-fighter-indicator`).style.width = '100%';
+
+    fight(leftFighter, rightFighter)
+      .then(winner => showWinnerModal(winner))
+      .catch(error => console.error(error));
+  });
+}
+
+function createFightText() {
+  const container = createElement({ tagName: 'div', className: 'preview-container___versus-block fight' });
+  const fight = createElement({
+    tagName: 'div',
+    className: 'preview-container___versus-fight',
+    attributes: { },
+    text: 'Fight !',
+  });
+
+  container.append(fight);
+
+  return container;
 }
 
 function createArena(selectedFighters) {

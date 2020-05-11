@@ -1,10 +1,25 @@
-import { createElement } from '../helpers/domHelper';
+import { createElement, EventEmitter } from '../helpers/domHelper';
 import { renderArena } from './arena';
 import versusImg from '../../../resources/versus.png';
 import { createFighterPreview } from './fighterPreview';
+import { fighterService } from '../services/fightersService';
+
+const Emitter = new EventEmitter(window);
 
 export function createFightersSelector() {
   let selectedFighters = [];
+
+  Emitter.on('change-fighter', event => {
+    const index = selectedFighters.findIndex(fighter => fighter._id == event.detail._id);
+
+    if (index !== -1) {
+      const btn = document.getElementById('fight_btn');
+
+      btn.classList.add('disabled');
+
+      selectedFighters.splice(index, 1);
+    }
+  })
 
   return async (event, fighterId) => {
     const fighter = await getFighterInfo(fighterId);
@@ -20,7 +35,15 @@ export function createFightersSelector() {
 const fighterDetailsMap = new Map();
 
 export async function getFighterInfo(fighterId) {
-  // get fighter info from fighterDetailsMap or from service and write it to fighterDetailsMap
+  return fighterDetailsMap.get(fighterId) ?? await loadFighterDetails(fighterId);
+}
+
+async function loadFighterDetails(fighterId) {
+  const details = await fighterService.getFighterDetails(fighterId);
+
+  fighterDetailsMap.set(fighterId, details);
+
+  return details;
 }
 
 function renderSelectedFighters(selectedFighters) {
@@ -47,6 +70,9 @@ function createVersusBlock(selectedFighters) {
   const fightBtn = createElement({
     tagName: 'button',
     className: `preview-container___fight-btn ${disabledBtn}`,
+    attributes: {
+      id: 'fight_btn'
+    }
   });
 
   fightBtn.addEventListener('click', onClick, false);
