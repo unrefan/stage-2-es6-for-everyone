@@ -49,11 +49,11 @@ function createBody(fighter) {
 }
 
 function restart() {
-  Emitter.emit('restart');
   hideModal();
+  window.location.reload();
 }
 
 function revansh() {
-  Emitter.emit('revansh');
   hideModal();
+  Emitter.emit('revansh');
 }

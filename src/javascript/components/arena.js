@@ -29,8 +29,8 @@ export async function renderArena(selectedFighters) {
     document.getElementById(`right-fighter-indicator`).style.width = '100%';
 
     fight(leftFighter, rightFighter)
-    .then(winner => showWinnerModal(winner))
-    .catch(error => console.error(error));
+      .then(winner => showWinnerModal(winner))
+      .catch(error => console.error(error));
   });
 }
 
