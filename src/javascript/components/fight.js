@@ -6,6 +6,7 @@ const gameProps = (fighter, indicator = 'left') => ({
   criticalHitChance: 1,
   dodgeChance: 1,
   canAttack: true,
+  canProc: true,
   effectiveHealth: fighter.health,
   healthBar: document.getElementById(`${indicator}-fighter-indicator`),
   get healthPercent() {
@@ -43,6 +44,19 @@ export async function fight(firstFighter, secondFighter) {
   });
 }
 
+function proc(one, two) {
+  if (one.canProc) {
+    one.canProc = false;
+
+    console.log('proc');
+
+    two.effectiveHealth -= one.attack * 2;    
+    two.healthBarWidth = two.healthPercent;
+
+    setTimeout(() => one.canProc = true, 1000 * 10);
+  }
+}
+
 function gameExtended(one, two) {
   return function (event) {
     one.effectiveHealth = one.health;
@@ -78,7 +92,6 @@ function attack(firstFighter, secondFighter) {
   if (firstFighter.canAttack) {
 
     secondFighter.effectiveHealth -= getDamage(firstFighter, secondFighter);
-
     secondFighter.healthBarWidth = secondFighter.healthPercent;
 
     firstFighter.criticalHitChance = 1;

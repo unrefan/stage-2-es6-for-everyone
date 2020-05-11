@@ -6,18 +6,25 @@ export function createFighterPreview(fighter, position) {
     tagName: 'div',
     className: `fighter-preview___root ${positionClassName}`,
   });
-  
+  const infoContainer = createElement({
+    tagName: 'div',
+    className: `fighter-preview___info ${positionClassName}`,
+  });
+
   if (fighter) {
+    const image = createFighterImage(fighter);
     const info = {
-      image: createFighterImage(fighter),
       name: createFighterName(fighter),
       health: createFighterHealth(fighter),
       attack: createFighterAttack(fighter),
       defense: createFighterDefense(fighter),
     }
     
-    Object.values(info).forEach(detailElement => fighterElement.append(detailElement));
+    fighterElement.append(image);
+    Object.values(info).forEach(detailElement => infoContainer.append(detailElement));
   }
+
+  fighterElement.append(infoContainer);
 
   return fighterElement;
 }
@@ -52,7 +59,7 @@ export function createFighterHealth(fighter) {
     tagName: 'p',
     className: 'fighter-preview__health',
     attributes: {},
-    text: fighter.health ?? '-'
+    text: `Health:  ${fighter.health}` ?? '-'
   });
 }
 
@@ -61,7 +68,7 @@ export function createFighterAttack(fighter) {
     tagName: 'p',
     className: 'fighter-preview__attack',
     attributes: {},
-    text: fighter.attack ?? '-'
+    text: `Attack:  ${fighter.attack}` ?? '-'
   });
 }
 
@@ -70,6 +77,6 @@ export function createFighterDefense(fighter) {
     tagName: 'p',
     className: 'fighter-preview__defense',
     attributes: {},
-    text: fighter.defense ?? '-'
+    text: `Defense: ${fighter.defense}` ?? '-'
   });
 }

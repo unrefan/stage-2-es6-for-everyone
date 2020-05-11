@@ -2,6 +2,8 @@
   display: flex;
   flex-direction: column;
   flex-basis: 250px;
+  height: 350px;
+  position: relative;
 }
 
 .fighter-preview___right {
@@ -12,9 +14,45 @@
   align-items: flex-start;
 }
 
-/* todo: style this */
-.fighter-preview__img {}
-.fighter-preview__name {}
-.fighter-preview__health {}
-.fighter-preview__attack {}
-.fighter-preview__defense {}
+.fighter-preview___info {
+  background: #ba0303;
+  color: #fff;
+  position: absolute;
+  top: 0;
+  transform: translateY(-50%);
+  box-shadow: 6px 6px 7px 0px rgba(0, 0, 0, 0.75);
+}
+
+.fighter-preview___info.fighter-preview___right {
+  right: 0;
+}
+
+.fighter-preview___root.fighter-preview___right .fighter-preview___img {
+  transform: scale(-1, 1);
+}
+
+.fighter-preview___info.fighter-preview___left {
+  left: 0;
+}
+
+.fighter-preview___img {
+  padding: 0;
+  margin: 0;
+}
+.fighter-preview__name {
+  padding: 0 15px;
+  margin: 0;
+  font-size: 1.2em;
+}
+.fighter-preview__health {
+  padding: 0 15px;
+  margin: 0;
+}
+.fighter-preview__attack {
+  padding: 0 15px;
+  margin: 0;
+}
+.fighter-preview__defense {
+  padding: 0 5px;
+  margin: 0;
+}
