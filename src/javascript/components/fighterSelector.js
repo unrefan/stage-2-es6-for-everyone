@@ -21,7 +21,6 @@ export function createFightersSelector() {
 const fighterDetailsMap = new Map();
 
 export async function getFighterInfo(fighterId) {
-  console.log(fighterId);
   return fighterDetailsMap.get(fighterId) ?? await loadFighterDetails(fighterId);
 }
 

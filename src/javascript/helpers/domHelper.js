@@ -12,3 +12,23 @@ export function createElement({ tagName, className, attributes = {}, text = '' }
 
   return element;
 }
+
+export class EventEmitter {
+  constructor(target = null) {
+    this.target = target ?? new EventTarget();
+  }
+  on(eventName, listener) {
+    return this.target.addEventListener(eventName, listener);
+  }
+  once(eventName, listener) {
+    return this.target.addEventListener(eventName, listener, { once: true });
+  }
+  off(eventName, listener) {
+    return this.target.removeEventListener(eventName, listener);
+  }
+  emit(eventName, detail) {
+    return this.target.dispatchEvent(
+      new CustomEvent(eventName, { detail, cancelable: true })
+    );
+  }
+}
